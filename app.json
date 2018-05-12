@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "instractive",
+    "description":
+      "Cloud Computing CA with React Native / Django!",
+    "slug": "instractive",
+    "privacy": "public",
+    "sdkVersion": "27.0.0",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "primaryColor": "#cccccc",
+    "icon": "./assets/images/icon.png",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    }
+  }
+}
