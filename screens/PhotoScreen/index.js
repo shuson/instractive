@@ -1,6 +1,6 @@
 import React from "react";
 import { Text } from "react-native";
+import { connect } from "react-redux";
+import Container from "./container";
 
-const PhotoScreen = props => <Text>Photo Screen</Text>;
-
-export default PhotoScreen;
+export default connect(null, null)(Container);

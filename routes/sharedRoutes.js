@@ -23,9 +23,9 @@ const sharedRoutes = {
   },
   Photo: {
     screen: PhotoScreen,
-    navigationOptions: {
+    navigationOptions: ({ screenProps }) => ({
       headerTitle: "Photo"
-    }
+    })
   }
 };
 

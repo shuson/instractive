@@ -44,10 +44,10 @@ const Photo = props => (
         </View>
       </View>
     </TouchableOpacity>
-    <FadeIn>
+    <FadeIn style={{ alignItems: 'center' }}>
       <Image
         source={{ uri: props.file }}
-        style={{ width, height: props.is_vertical ? 600 : 300 }}
+        style={{ width, height: props.is_vertical ? 300 : 200, flex: 1}}
       />
     </FadeIn>
     <View style={styles.photoMeta}>

@@ -41,18 +41,18 @@ const TabsNavigation = TabNavigator(
         )
       }
     },
-    Notifications: {
-      screen: NotificationsRoute,
-      navigationOptions: {
-        tabBarIcon: ({ focused }) => (
-          <Ionicons
-            name={focused ? "ios-heart" : "ios-heart-outline"}
-            size={30}
-            color={"black"}
-          />
-        )
-      }
-    },
+    // Notifications: {
+    //   screen: NotificationsRoute,
+    //   navigationOptions: {
+    //     tabBarIcon: ({ focused }) => (
+    //       <Ionicons
+    //         name={focused ? "ios-notifications" : "ios-notifications-outline"}
+    //         size={30}
+    //         color={"black"}
+    //       />
+    //     )
+    //   }
+    // },
     Profile: {
       screen: ProfileRoute,
       navigationOptions: {
