@@ -4,6 +4,7 @@ import {
   View,
   Text,
   Image,
+  Button,
   StyleSheet,
   Dimensions,
   TouchableOpacity,
@@ -12,6 +13,7 @@ import {
   ActivityIndicator
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { withNavigation } from "react-navigation";
 
 const { width, height } = Dimensions.get("window");
 
@@ -53,12 +55,8 @@ const LogInScreen = props => (
           )}
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.fbContainer} onPressOut={props.fbLogin}>
-        <View style={styles.fbView}>
-          <Ionicons name="logo-facebook" size={22} color="#3E99EE" />
-          <Text style={styles.fbText}>Log in with Facebook</Text>
-        </View>
-      </TouchableOpacity>
+      <View style={{borderBottomColor: 'blue', borderBottomWidth: 1}} />
+      <Button title="Sign Up" onPress={() => props.navigation.navigate("SignUp")} />
     </View>
   </View>
 );
@@ -139,4 +137,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default LogInScreen;
+export default withNavigation(LogInScreen);

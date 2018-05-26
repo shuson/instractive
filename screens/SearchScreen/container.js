@@ -1,9 +1,22 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { Alert } from "react-native";
 import SearchScreen from "./presenter";
 import SearchBar from "../../components/SearchBar";
 
 class Container extends Component {
+  constructor(props) {
+    super(props)
+
+    const { clearSearch } = props
+    clearSearch()
+
+    this.state = {
+      searchingBy: "",
+      isFetching: false
+    };
+  }
+
   static navigationOptions = ({ navigation }) => {
     const { params } = navigation.state;
     return {
@@ -11,17 +24,14 @@ class Container extends Component {
     };
   };
   static propTypes = {
-    getEmptySearch: PropTypes.func.isRequired,
-    searchHashtag: PropTypes.func.isRequired,
+    getSearch: PropTypes.func.isRequired,
+    clearSearch: PropTypes.func,
     search: PropTypes.array
   };
   static defaultProps = {
     search: []
   };
-  state = {
-    searchingBy: "",
-    isFetching: false
-  };
+
   componentDidMount() {
     const { navigation } = this.props;
     navigation.setParams({
@@ -43,24 +53,29 @@ class Container extends Component {
   }
   _submitSearch = text => {
     const { searchingBy } = this.state;
-    const { searchHashtag, getEmptySearch } = this.props;
-    if (text === "") {
-      getEmptySearch();
-    } else {
-      searchHashtag(text);
-    }
+    const { getSearch, clearSearch } = this.props;
     this.setState({
       searchingBy: text,
       isFetching: true
     });
+    if (text === "") {
+      this.setState({ ...this.state, isSubmitting: false });
+      Alert.alert("Key in some text, try again please");
+      
+      clearSearch()
+    } else {
+      getSearch(text);
+    }
+    
   };
   _refresh = () => {
     const { searchingBy } = this.state;
     const { getEmptySearch, searchHashtag } = this.props;
     if (searchingBy === "") {
-      getEmptySearch();
+      Alert.alert("Key in some text, try again please");
+      this.setState({ ...this.state, isSubmitting: false });
     } else {
-      searchHashtag(searchingBy);
+      getSearch(searchingBy);
     }
   };
 }

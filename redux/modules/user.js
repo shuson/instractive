@@ -3,27 +3,45 @@
 import { API_URL, FB_APP_ID } from "../../constants";
 import { AsyncStorage } from "react-native";
 import { Permissions, Notifications, Facebook } from "expo";
+import {Auth } from 'aws-amplify'
 
 // Actions
 
 const LOG_IN = "LOG_IN";
+const LOG_IN_FAIL = "LOG_IN_FAIL"
 const LOG_OUT = "LOG_OUT";
-const SET_USER = "SET_USER";
+const SET_AUTH = "SET_AUTH";
+const SET_PROFILE = "SET_PROFILE"
 const SET_NOTIFICATIONS = "SET_NOTIFICATIONS";
+const SET_SEARCH = "SET_SEARCH"
 
 // Action Creators
 
 function setLogIn(token) {
+  //console.log('Yahaha token ', token)
   return {
     type: LOG_IN,
     token
   };
 }
-
-function setUser(user) {
+function setLogInFail(error) {
   return {
-    type: SET_USER,
-    user
+    type: LOG_IN_FAIL,
+    error
+  };
+}
+
+function setAuth(auth) {
+  return {
+    type: SET_AUTH,
+    auth
+  };
+}
+
+function setProfile(profile) {
+  return {
+    type: SET_PROFILE,
+    profile
   };
 }
 
@@ -38,28 +56,34 @@ function setNotifications(notifications) {
   };
 }
 
+function setSearch(search) {
+  return {
+    type: "SET_SEARCH",
+    search
+  }
+}
+
 // API Actions
 function login(username, password) {
   return dispatch => {
-    return fetch(`${API_URL}/rest-auth/login/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        username,
-        password
-      })
-    })
-      .then(response => response.json())
-      .then(json => {
-        if (json.user && json.token) {
-          dispatch(setLogIn(json.token));
-          dispatch(setUser(json.user));
+    return Auth.signIn(username, password)
+      .then(auth => {
+        if (auth) {
+          Auth.currentSession().then(session => {
+            console.log("session " , session)
+            dispatch(setLogIn(session.idToken.jwtToken))
+          })
+          dispatch(setAuth(auth))
+          dispatch(getOwnProfile())
+          
           return true;
         } else {
           return false;
         }
+      }).catch(err => {
+        dispatch(setLogInFail(err.message))
+        console.log("login failed ", err)
+        return false
       });
   };
 }
@@ -86,7 +110,7 @@ function facebookLogin() {
         .then(json => {
           if (json.user && json.token) {
             dispatch(setLogIn(json.token));
-            dispatch(setUser(json.user));
+            dispatch(setAuth(json.user));
             return true;
           } else {
             return false;
@@ -118,7 +142,7 @@ function getNotifications() {
 function getOwnProfile() {
   return (dispatch, getState) => {
     const { user: { token } } = getState();
-    fetch(`${API_URL}/users/me/`, {
+    fetch(`${API_URL}/me/`, {
       method: "GET",
       headers: {
         Authorization: `JWT ${token}`
@@ -131,7 +155,9 @@ function getOwnProfile() {
           return response.json();
         }
       })
-      .then(json => dispatch(setUser(json)));
+      .then(json => {
+        dispatch(setProfile(json))
+      });
   };
 }
 
@@ -150,8 +176,42 @@ function getProfile(username) {
           return response.json();
         }
       })
-      .then(json => json);
+      .then(json => {
+        return json
+      });
   };
+}
+
+function getSearch(text) {
+  return (dispatch, getState) => {
+    const { user: { token } } = getState();
+    
+    fetch(`${API_URL}/users/search/${text}`, {
+      method: "GET",
+      headers: {
+        Authorization: `JWT ${token}`,
+        'Content-type': 'application/json'
+      }
+    })
+      .then(response => {
+        if (response.status === 401) {
+          dispatch(logOut());
+        } else {
+          return response.json();
+        }
+      })
+      .then(json => {
+        dispatch(setSearch(json))
+      }).catch(error => console.log(error));
+  };
+}
+
+function clearSearch() {
+  return (dispatch, getState) => {
+    const {user: { search}} = getState()
+
+    dispatch(setSearch([]))
+  }
 }
 
 function followUser(userId) {
@@ -240,10 +300,16 @@ function reducer(state = initialState, action) {
   switch (action.type) {
     case LOG_IN:
       return applyLogIn(state, action);
+    case LOG_IN_FAIL:
+      return applyLogInFail(state, action);
     case LOG_OUT:
       return applyLogOut(state, action);
-    case SET_USER:
-      return applySetUser(state, action);
+    case SET_AUTH:
+      return applySetAuth(state, action);
+    case SET_PROFILE:
+      return applySetProfile(state, action)
+    case SET_SEARCH:
+      return applySetSearch(state, action)
     case SET_NOTIFICATIONS:
       return applySetNotifications(state, action);
     default:
@@ -262,21 +328,50 @@ function applyLogIn(state, action) {
   };
 }
 
+function applyLogInFail(state, action) {
+  const { error } = action;
+  return {
+    ...state,
+    isLoggedIn: false,
+    error
+  };
+} 
+
 function applyLogOut(state, action) {
   AsyncStorage.clear();
   return {
     ...state,
     isLoggedIn: false,
-    token: ""
+    token: "",
+    auth: {},
+    profile: {},
+    search: []
+    
   };
 }
 
-function applySetUser(state, action) {
-  const { user } = action;
+function applySetAuth(state, action) {
+  const { auth } = action;
   return {
     ...state,
-    profile: user
+    auth
   };
+}
+
+function applySetProfile(state, action) {
+  const { profile } = action
+  return {
+    ...state,
+    profile
+  }
+}
+
+function applySetSearch(state, action) {
+  const { search } = action
+  return {
+    ...state,
+    search
+  }
 }
 
 function applySetNotifications(state, action) {
@@ -298,7 +393,9 @@ const actionCreators = {
   followUser,
   unfollowUser,
   getProfile,
-  registerForPush
+  registerForPush,
+  getSearch,
+  clearSearch
 };
 
 export { actionCreators };

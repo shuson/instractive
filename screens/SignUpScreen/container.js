@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Alert } from "react-native";
-import LogInScreen from "./presenter";
+import SignUpScreen from "./presenter";
 
 class Container extends Component {
   state = {
@@ -15,12 +15,12 @@ class Container extends Component {
   };
   render() {
     return (
-      <LogInScreen
+      <SignUpScreen
         {...this.state}
         changeUsername={this._changeUsername}
         changePassword={this._changePassword}
         submit={this._submit}
-        fbLogin={this._handleFBLogin}
+        toRegister={this._handleFBLogin}
       />
     );
   }
@@ -40,7 +40,7 @@ class Container extends Component {
         });
         const loginResult = await login(username, password);
         if (!loginResult) {
-          Alert.alert("Invalid Username or Password, try again please");
+          Alert.alert("Something went wrong, try again");
           this.setState({ isSubmitting: false });
         }
       } else {

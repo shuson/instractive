@@ -4,11 +4,19 @@ import Profile from "../../components/Profile";
 
 class Container extends Component {
   static propTypes = {
+    auth: PropTypes.object,
     profile: PropTypes.object.isRequired,
     getOwnProfile: PropTypes.func.isRequired
   };
+
+  componentDidMount = () => {
+    const {getOwnProfile } = this.props
+
+    getOwnProfile()
+  }
+
   render() {
-    const { profile, getOwnProfile } = this.props;
+    const { auth, profile, getOwnProfile } = this.props;
     return <Profile profileObject={profile} refresh={getOwnProfile} />;
   }
 }

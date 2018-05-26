@@ -22,7 +22,7 @@ class Container extends Component {
 
   componentDidMount = () => {
     const { initApp } = this.props;
-    initApp();
+    //initApp();
   };
 
   render() {

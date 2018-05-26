@@ -1,9 +1,9 @@
 import { connect } from "react-redux";
 import Container from "./container";
-import { actionCreators as photoActions } from "../../redux/modules/photos";
+import { actionCreators as userActions } from "../../redux/modules/user";
 
 const mapStateToProps = (state, ownProps) => {
-  const { photos: { search } } = state;
+  const { user: { search } } = state;
   return {
     search
   };
@@ -11,11 +11,11 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    getEmptySearch: () => {
-      dispatch(photoActions.getSearch());
+    getSearch: (text) => {
+      dispatch(userActions.getSearch(text));
     },
-    searchHashtag: hashtag => {
-      dispatch(photoActions.searchByHashtag(hashtag));
+    clearSearch: () => {
+      dispatch(userActions.clearSearch())
     }
   };
 };

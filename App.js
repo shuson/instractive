@@ -5,8 +5,16 @@ import { StyleSheet, Text, View } from "react-native";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/es/integration/react";
 import configureStore from "./redux/configureStore";
-const { persistor, store } = configureStore();
 import AppContainer from "./components/AppContainer";
+import Amplify from 'aws-amplify';
+import aws_exports from './awsmobilejs/aws-exports';
+
+Amplify.configure(aws_exports)
+
+import { YellowBox } from 'react-native';
+YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader']);
+
+const { persistor, store } = configureStore();
 
 class App extends React.Component {
   state = {

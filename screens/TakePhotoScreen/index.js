@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StatusBar } from "react-native";
+import { Text, View, StatusBar } from "react-native";
 import AddPhotoNavigation from "../../navigation/AddPhotoNavigation";
 
 const TakePhotoScreen = props => (

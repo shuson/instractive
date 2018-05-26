@@ -34,7 +34,7 @@ const AddPhotoNavigation = TabNavigator(
         fontSize: 14,
         fontWeight: "600"
       },
-      showIcon: false
+      showIcon: true
     }
   }
 );

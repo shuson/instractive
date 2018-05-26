@@ -123,6 +123,7 @@ function unlikePhoto(photoId) {
 
 function uploadPhoto(file, caption, location, tags) {
   const tagsArray = tags.split(",");
+  console.log(file)
   const data = new FormData();
   data.append("caption", caption);
   data.append("location", location);

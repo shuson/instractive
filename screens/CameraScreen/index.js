@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import {
   View,
   Text,
+  Button,
   TouchableOpacity,
   StyleSheet,
   Image,
@@ -11,6 +12,7 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { Camera, Permissions } from "expo";
 import FitImage from "react-native-fit-image";
+import { withNavigation } from "react-navigation";
 
 class CameraScreen extends Component {
   state = {
@@ -107,6 +109,7 @@ class CameraScreen extends Component {
               </TouchableOpacity>
             )}
           </View>
+          <Button title="Cancel" onPress={() => this.props.navigation.goBack(null)} />
         </View>
       );
     }
@@ -200,4 +203,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default CameraScreen;
+export default withNavigation(CameraScreen);

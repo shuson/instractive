@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import {
+  Alert,
   View,
   Text,
   ScrollView,
@@ -60,8 +61,12 @@ const Profile = props => (
                 text={"following"}
               />
             </View>
-            {props.profileObject.is_self ? (
-              <TouchableOpacity>
+            {props.profileObject.is_self ? (<View>
+              <TouchableOpacity
+                onPress={() => {
+                  Alert.alert("Coming Soon!");
+                }}
+              >
                 <View
                   style={[
                     styles.button,
@@ -75,6 +80,21 @@ const Profile = props => (
                   </Text>
                 </View>
               </TouchableOpacity>
+              <TouchableOpacity  onPressOut={() => props.logOut()}>
+                <View
+                  style={[
+                    styles.button,
+                    { backgroundColor: "white" },
+                    { borderColor: "black" },
+                    { borderWidth: StyleSheet.hairlineWidth }
+                  ]}
+                >
+                  <Text style={[styles.text, { color: "black" }]}>
+                    Logout
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              </View>
             ) : (
               <TouchableOpacity>
                 <View style={[styles.button, { backgroundColor: "#112233" }]}>

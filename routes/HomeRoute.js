@@ -17,13 +17,13 @@ const HomeRoute = StackNavigator(
             resizeMode={"contain"}
           />
         )
-        // ,
-        // headerLeft: (
-        //   <NavButton
-        //     iconName={"ios-camera-outline"}
-        //     onPress={() => navigation.navigate("TakePhoto")}
-        //   />
-        // )
+        ,
+        headerLeft: (
+          <NavButton
+            iconName={"ios-camera-outline"}
+            onPress={() => navigation.navigate("TakePhoto")}
+          />
+        )
       })
     },
     ...sharedRoutes

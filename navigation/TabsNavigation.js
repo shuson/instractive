@@ -21,6 +21,18 @@ const TabsNavigation = TabNavigator(
         )
       }
     },
+    Profile: {
+      screen: ProfileRoute,
+      navigationOptions: {
+        tabBarIcon: ({ focused }) => (
+          <Ionicons
+            name={focused ? "ios-person" : "ios-person-outline"}
+            size={30}
+            color={"black"}
+          />
+        )
+      }
+    },
     Search: {
       screen: SearchRoute,
       navigationOptions: {
@@ -33,14 +45,14 @@ const TabsNavigation = TabNavigator(
         )
       }
     },
-    AddPhoto: {
-      screen: View,
-      navigationOptions: {
-        tabBarIcon: ({ focused }) => (
-          <Ionicons name={"ios-add-circle-outline"} size={30} color={"black"} />
-        )
-      }
-    },
+    // AddPhoto: {
+    //   screen: View,
+    //   navigationOptions: {
+    //     tabBarIcon: ({ focused }) => (
+    //       <Ionicons name={"ios-add-circle-outline"} size={30} color={"black"} />
+    //     )
+    //   }
+    // },
     // Notifications: {
     //   screen: NotificationsRoute,
     //   navigationOptions: {
@@ -53,30 +65,12 @@ const TabsNavigation = TabNavigator(
     //     )
     //   }
     // },
-    Profile: {
-      screen: ProfileRoute,
-      navigationOptions: {
-        tabBarIcon: ({ focused }) => (
-          <Ionicons
-            name={focused ? "ios-person" : "ios-person-outline"}
-            size={30}
-            color={"black"}
-          />
-        )
-      }
-    }
   },
   {
     tabBarComponent: ({jumpToIndex, ...props, navigation}) => (
         <TabBarBottom
             {...props}
-            jumpToIndex={index => {
-                if(index === 2){
-                    navigation.navigate("TakePhoto")
-                } else {
-                    jumpToIndex(index)
-                }
-            }}
+            jumpToIndex={index => jumpToIndex(index)}
         />
     ),
     tabBarPosition: "bottom",
