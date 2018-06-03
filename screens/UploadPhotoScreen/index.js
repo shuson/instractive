@@ -5,7 +5,7 @@ import { actionCreators as photoActions } from "../../redux/modules/photos";
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     submit: (file, caption, location, tags) => {
-      return dispatch(photoActions.uploadPhoto(file, caption, location, tags));
+      return dispatch(photoActions.uploadToS3(file, caption, location, tags));
     }
   };
 };

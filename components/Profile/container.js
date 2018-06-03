@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View } from "react-native";
+import { View, Alert } from "react-native";
 import PropTypes from "prop-types";
 import Profile from "./presenter";
 import ActionSheet from "react-native-actionsheet";
@@ -39,6 +39,8 @@ class Container extends Component {
         <Profile
           {...this.props}
           {...this.state}
+          followUser={this._followUser}
+          unfollowUser={this._unfollowUser}
           changeToList={this._changeToList}
           changeToGrid={this._changeToGrid}
           showAS={this._showActionSheet}
@@ -73,6 +75,34 @@ class Container extends Component {
       logOut();
     }
   };
+  _followUser = username => {
+    this.props.followUser(username)
+    this.setState({
+      isFetching: true
+    })
+
+    setTimeout(() => {
+      this.props.refresh()
+      this.setState({
+        isFetching: false
+      })
+    }, 3000); 
+  }
+
+  _unfollowUser = username => {
+    this.props.unfollowUser(username)
+    this.setState({
+      isFetching: true
+    })
+    
+    setTimeout(() => {
+      this.props.refresh()
+      this.setState({
+        isFetching: false
+      })
+    }, 3000); 
+  }
 }
+
 
 export default Container;

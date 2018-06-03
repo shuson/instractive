@@ -53,7 +53,7 @@ const Profile = props => (
                 text={"posts"}
               />
               <ProfileNumber
-                number={props.profileObject.followers_count}
+                number={props.profileObject.follower_count}
                 text={"followers"}
               />
               <ProfileNumber
@@ -96,13 +96,26 @@ const Profile = props => (
               </TouchableOpacity>
               </View>
             ) : (
-              <TouchableOpacity>
-                <View style={[styles.button, { backgroundColor: "#112233" }]}>
-                  <Text style={[styles.text, { color: "white" }]}>
-                    {props.profileObject.following ? "Unfollow" : "Follow"}
-                  </Text>
-                </View>
-              </TouchableOpacity>
+              
+              props.profileObject.following ? 
+                (<TouchableOpacity onPress={() => {
+                    props.unfollowUser(props.profileObject.username)
+                  }} >
+                  <View style={[styles.button, { backgroundColor: "#112233" }]}>
+                    <Text style={[styles.text, { color: "white" }]}>
+                      Unfollow
+                    </Text>
+                  </View>
+                </TouchableOpacity>) : 
+                <TouchableOpacity onPress={() => {
+                    props.followUser(props.profileObject.username)
+                  }}>
+                  <View style={[styles.button, { backgroundColor: "#112233" }]}>
+                    <Text style={[styles.text, { color: "white" }]}>
+                      Follow
+                    </Text>
+                  </View>
+                </TouchableOpacity>
             )}
           </View>
         </View>
@@ -231,7 +244,7 @@ Profile.propTypes = {
     is_self: PropTypes.bool,
     images: PropTypes.arrayOf(
       PropTypes.shape({
-        id: PropTypes.number.isRequired,
+        id: PropTypes.string.isRequired,
         creator: PropTypes.shape({
           profile_image: PropTypes.string,
           username: PropTypes.string.isRequired
@@ -242,7 +255,7 @@ Profile.propTypes = {
         caption: PropTypes.string.isRequired,
         comments: PropTypes.arrayOf(
           PropTypes.shape({
-            id: PropTypes.number.isRequired,
+            id: PropTypes.string.isRequired,
             message: PropTypes.string.isRequired,
             creator: PropTypes.shape({
               profile_image: PropTypes.string,
@@ -264,7 +277,9 @@ Profile.propTypes = {
   changeToList: PropTypes.func.isRequired,
   changeToGrid: PropTypes.func.isRequired,
   mode: PropTypes.oneOf(["grid", "list"]).isRequired,
-  showAS: PropTypes.func.isRequired
+  showAS: PropTypes.func.isRequired,
+  followUser: PropTypes.func,
+  unfollowUser: PropTypes.func
 };
 
 export default Profile;

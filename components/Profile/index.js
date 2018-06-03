@@ -6,6 +6,12 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     logOut: () => {
       dispatch(userActions.logOut());
+    },
+    followUser: (username) => {
+      dispatch(userActions.followUser(username))
+    },
+    unfollowUser: (username) => {
+      dispatch(userActions.unfollowUser(username))
     }
   };
 };

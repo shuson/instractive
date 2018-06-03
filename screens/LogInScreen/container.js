@@ -46,6 +46,11 @@ class Container extends Component {
       } else {
         Alert.alert("All fields are required");
       }
+    } else {
+      this.setState({
+        isSubmitting: false
+      });
+      Alert.alert("Login fails! Bad Response");
     }
   };
   _handleFBLogin = async () => {

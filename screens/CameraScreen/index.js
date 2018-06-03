@@ -12,7 +12,6 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { Camera, Permissions } from "expo";
 import FitImage from "react-native-fit-image";
-import { withNavigation } from "react-navigation";
 
 class CameraScreen extends Component {
   state = {
@@ -23,12 +22,14 @@ class CameraScreen extends Component {
     picture: null
   };
 
-  componentWillMount = async () => {
+  componentDidMount = async () => {
     const camera = await Permissions.askAsync(Permissions.CAMERA);
+    const camera_roll = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     this.setState({
-      hasCameraPermissions: camera.status === "granted"
+      hasCameraPermissions: camera.status === "granted" && camera_roll.status === "granted"
     });
   };
+
 
   render() {
     const {
@@ -39,7 +40,7 @@ class CameraScreen extends Component {
       picture
     } = this.state;
     if (hasCameraPermissions === null) {
-      return <View />;
+      return <Text>Waiting for permission</Text>;
     } else if (hasCameraPermissions === false) {
       return <Text>No Access to Camera, check your settings</Text>;
     } else {
@@ -109,7 +110,7 @@ class CameraScreen extends Component {
               </TouchableOpacity>
             )}
           </View>
-          <Button title="Cancel" onPress={() => this.props.navigation.goBack(null)} />
+          <Button title="Cancel" onPress={this._cancelTakePhoto} />
         </View>
       );
     }
@@ -162,6 +163,11 @@ class CameraScreen extends Component {
       pictureTaken: false
     });
   };
+  _cancelTakePhoto = () => {
+    const { navigation } = this.props;
+
+    navigation.goBack(null)
+  }
 }
 
 const styles = StyleSheet.create({
@@ -203,4 +209,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default withNavigation(CameraScreen);
+export default CameraScreen;

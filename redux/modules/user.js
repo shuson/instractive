@@ -70,12 +70,10 @@ function login(username, password) {
       .then(auth => {
         if (auth) {
           Auth.currentSession().then(session => {
-            console.log("session " , session)
             dispatch(setLogIn(session.idToken.jwtToken))
+            dispatch(getOwnProfile())
           })
-          dispatch(setAuth(auth))
-          dispatch(getOwnProfile())
-          
+
           return true;
         } else {
           return false;
@@ -84,6 +82,29 @@ function login(username, password) {
         dispatch(setLogInFail(err.message))
         console.log("login failed ", err)
         return false
+      });
+  };
+}
+
+function postSignup(username, email) {
+  return (dispatch) => {
+    fetch(`https://lehesr3ekg.execute-api.ap-southeast-1.amazonaws.com/dev1/users`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username: username,
+        email: email
+      })
+    })
+      .then(response => {
+        if(response.status == 200)
+          return true
+        else 
+          return false
+      }).catch(e => {
+        console.log(e)
       });
   };
 }
@@ -145,7 +166,7 @@ function getOwnProfile() {
     fetch(`${API_URL}/me/`, {
       method: "GET",
       headers: {
-        Authorization: `JWT ${token}`
+        Authorization: `${token}`
       }
     })
       .then(response => {
@@ -157,6 +178,8 @@ function getOwnProfile() {
       })
       .then(json => {
         dispatch(setProfile(json))
+      }).catch(e => {
+        console.log(e)
       });
   };
 }
@@ -166,7 +189,7 @@ function getProfile(username) {
     const { user: { token } } = getState();
     return fetch(`${API_URL}/users/${username}/`, {
       headers: {
-        Authorization: `JWT ${token}`
+        Authorization: `${token}`
       }
     })
       .then(response => {
@@ -178,6 +201,8 @@ function getProfile(username) {
       })
       .then(json => {
         return json
+      }).catch(e => {
+        console.log(e)
       });
   };
 }
@@ -189,7 +214,7 @@ function getSearch(text) {
     fetch(`${API_URL}/users/search/${text}`, {
       method: "GET",
       headers: {
-        Authorization: `JWT ${token}`,
+        Authorization: `${token}`,
         'Content-type': 'application/json'
       }
     })
@@ -214,43 +239,45 @@ function clearSearch() {
   }
 }
 
-function followUser(userId) {
+function followUser(username) {
   return (dispatch, getState) => {
     const { user: { token } } = getState();
-    return fetch(`${API_URL}/users/${userId}/follow/`, {
+    return fetch(`${API_URL}/users/${username}/follow/`, {
       method: "POST",
       headers: {
-        Authorization: `JWT ${token}`
+        Authorization: `${token}`
       }
     }).then(response => {
       if (response.status === 401) {
         dispatch(logOut());
       } else if (response.ok) {
+        dispatch(getProfile(username))
         return true;
       } else if (!response.ok) {
         return false;
       }
-    });
+    }).catch(err => console.log(err));;
   };
 }
 
-function unfollowUser(userId) {
+function unfollowUser(username) {
   return (dispatch, getState) => {
     const { user: { token } } = getState();
-    return fetch(`${API_URL}/users/${userId}/unfollow/`, {
+    return fetch(`${API_URL}/users/${username}/unfollow/`, {
       method: "POST",
       headers: {
-        Authorization: `JWT ${token}`
+        Authorization: `${token}`
       }
     }).then(response => {
       if (response.status === 401) {
         dispatch(logOut());
       } else if (response.ok) {
+        dispatch(getProfile(username))
         return true;
       } else if (!response.ok) {
         return false;
       }
-    });
+    }).catch(err => console.log(err));
   };
 }
 
@@ -273,13 +300,11 @@ function registerForPush() {
 
     let pushToken = await Notifications.getExpoPushTokenAsync();
 
-    console.log(pushToken);
-
     return fetch(`${API_URL}/users/push/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `JWT ${token}`
+        Authorization: `${token}`
       },
       body: JSON.stringify({
         token: pushToken
@@ -321,6 +346,7 @@ function reducer(state = initialState, action) {
 
 function applyLogIn(state, action) {
   const { token } = action;
+  console.log(" token ", token)
   return {
     ...state,
     isLoggedIn: true,
@@ -386,6 +412,7 @@ function applySetNotifications(state, action) {
 
 const actionCreators = {
   login,
+  postSignup,
   facebookLogin,
   logOut,
   getNotifications,

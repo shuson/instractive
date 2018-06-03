@@ -9,6 +9,7 @@ const middlewares = [thunk];
 
 const persistConfig = {
   key: "root",
+  blacklist: ['navigation', 'user', 'photos'],
   storage
 };
 

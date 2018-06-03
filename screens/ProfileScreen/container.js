@@ -11,7 +11,6 @@ class Container extends Component {
 
   componentDidMount = () => {
     const {getOwnProfile } = this.props
-
     getOwnProfile()
   }
 

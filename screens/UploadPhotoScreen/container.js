@@ -54,6 +54,10 @@ class Container extends Component {
         navigation.goBack(null);
         navigation.goBack(null);
         navigation.goBack(null);
+      } else {
+        navigation.goBack(null);
+        navigation.goBack(null);
+        navigation.goBack(null);
       }
     } else {
       Alert.alert("All fields are required");

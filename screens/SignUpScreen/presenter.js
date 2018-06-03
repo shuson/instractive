@@ -50,9 +50,11 @@ class SignUpScreen extends React.Component {
   }
 
   confirmSignUp() {
+    const {username, email} = this.state
     Auth.confirmSignUp(this.state.username, this.state.confirmationCode)
     .then(() => {
       console.log('successful confirm sign up!')
+      this.props.postSignup(username, email)
       this.props.navigation.goBack()
     })
     .catch(err => console.log('error confirming signing up!: ', err))

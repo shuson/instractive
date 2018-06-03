@@ -4,6 +4,19 @@ import { API_URL } from "../../constants";
 import { actionCreators as userActions } from "./user";
 import uuidv1 from "uuid/v1";
 
+import { RNS3 } from 'react-native-aws3';
+
+const s3Options = {
+  keyPrefix: '',
+  bucket: 'photobook-cloud-ca',
+  region: 'us-east-1',
+  accessKey: 'AKIAJC5CESLM6MVHXTRA',
+  secretKey: 'woeLyQ1IjGUxX+JHvMd9jHD8f8G/PDnlb+JadF1f',
+  successActionStatus: 201
+};
+
+const DUMMY_API = "http://private-c70ca1-instractiveapp.apiary-mock.com"
+const PHOTO_URL = "https://0unwlsyfig.execute-api.ap-southeast-1.amazonaws.com/dev1"
 // Actions
 
 const SET_FEED = "SET_FEED";
@@ -26,10 +39,11 @@ function setSearch(search) {
 
 function getFeed() {
   return (dispatch, getState) => {
-    const { user: { token } } = getState();
-    fetch(`${API_URL}/images/`, {
+    const { user: { token, profile: {username } } } = getState();
+    fetch(`${PHOTO_URL}/images/`, {
       headers: {
-        Authorization: `JWT ${token}`
+        "Authorization": `${token}`,
+        "username": username
       }
     })
       .then(response => {
@@ -39,16 +53,20 @@ function getFeed() {
           return response.json();
         }
       })
-      .then(json => dispatch(setFeed(json)));
+      .then(json => {
+        dispatch(setFeed(json))
+      })
+      .catch(err => console.log(err));
   };
 }
 
 function getSearch() {
   return (dispatch, getState) => {
     const { user: { token } } = getState();
-    fetch(`${API_URL}/images/search/`, {
+    fetch(`${DUMMY_API}/images/search/`, {
       headers: {
-        Authorization: `JWT ${token}`
+        Authorization: `JWT ${token}`,
+        "username": username
       }
     })
       .then(response => {
@@ -65,7 +83,7 @@ function getSearch() {
 function searchByHashtag(hashtag) {
   return (dispatch, getState) => {
     const { user: { token } } = getState();
-    fetch(`${API_URL}/images/search/?hashtags=${hashtag}`, {
+    fetch(`${DUMMY_API}/images/search/?hashtags=${hashtag}`, {
       headers: {
         Authorization: `JWT ${token}`
       }
@@ -83,11 +101,12 @@ function searchByHashtag(hashtag) {
 
 function likePhoto(photoId) {
   return (dispatch, getState) => {
-    const { user: { token } } = getState();
-    return fetch(`${API_URL}/images/${photoId}/likes/`, {
+    const { user: { token, profile: {username } } } = getState();
+    return fetch(`${PHOTO_URL}/images/${photoId}/like/`, {
       method: "POST",
       headers: {
-        Authorization: `JWT ${token}`
+        Authorization: `${token}`,
+        "username": username
       }
     }).then(response => {
       if (response.status === 401) {
@@ -103,11 +122,12 @@ function likePhoto(photoId) {
 
 function unlikePhoto(photoId) {
   return (dispatch, getState) => {
-    const { user: { token } } = getState();
-    return fetch(`${API_URL}/images/${photoId}/unlikes/`, {
-      method: "DELETE",
+    const { user: { token, profile: {username } } } = getState();
+    return fetch(`${PHOTO_URL}/images/${photoId}/dislike/`, {
+      method: "POST",
       headers: {
-        Authorization: `JWT ${token}`
+        Authorization: `${token}`,
+        "username": username
       }
     }).then(response => {
       if (response.status === 401) {
@@ -121,27 +141,52 @@ function unlikePhoto(photoId) {
   };
 }
 
-function uploadPhoto(file, caption, location, tags) {
-  const tagsArray = tags.split(",");
-  console.log(file)
-  const data = new FormData();
-  data.append("caption", caption);
-  data.append("location", location);
-  data.append("tags", JSON.stringify(tagsArray));
-  data.append("file", {
+function uploadToS3(file, caption, location, tags) {
+  const photo = {
     uri: file,
-    type: "image/jpeg",
-    name: `${uuidv1()}.jpg`
-  });
+    name: `${uuidv1()}.jpg`,
+    type: 'image/jpeg'
+  };
+
   return (dispatch, getState) => {
-    const { user: { token } } = getState();
-    return fetch(`${API_URL}/images/`, {
+    RNS3.put(photo, s3Options).then(async (response) => {
+
+      if (response.status !== 201) {
+        return false
+      }
+      const s3Resp = response.body.postResponse || {}
+      console.log("*** s3 addr ***", s3Resp.location)
+
+      const result = await dispatch(uploadPhoto(s3Resp.key, s3Resp.location, caption, location, tags))
+      return result
+    }).catch(err => console.log(err));
+  }
+}
+
+function uploadPhoto(name, file, caption, location, tags) {
+  const tagsArray = tags.split(",");
+  const data = {
+    caption: caption,
+    location: location,
+    tags: tags,
+    file: {
+      uri: file,
+      type: "image/jpeg",
+      name: name
+    }
+  }
+
+  return (dispatch, getState) => {
+    const { user: { token, profile: {username } } } = getState();
+
+    return fetch(`${PHOTO_URL}/images/`, {
       method: "POST",
       headers: {
-        Authorization: `JWT ${token}`,
-        "Content-Type": "multipart/form-data"
+        Authorization: `${token}`,
+        "Content-Type": "application/json",
+        "username": username
       },
-      body: data
+      body: JSON.stringify(data)
     }).then(response => {
       if (response.status === 401) {
         dispatch(userActions.logOut());
@@ -152,7 +197,7 @@ function uploadPhoto(file, caption, location, tags) {
       } else {
         return false;
       }
-    });
+    }).catch(e => console.log(e));
   };
 }
 
@@ -199,7 +244,8 @@ const actionCreators = {
   likePhoto,
   unlikePhoto,
   searchByHashtag,
-  uploadPhoto
+  uploadPhoto,
+  uploadToS3
 };
 
 export { actionCreators };

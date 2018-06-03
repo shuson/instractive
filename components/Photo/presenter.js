@@ -62,7 +62,7 @@ const Photo = props => (
           <Text style={styles.message}>{props.caption}</Text>
         </Text>
       </View>
-      {props.comments.length > 0 && (
+      {props.comments && props.comments.length > 0 && (
         <TouchableOpacity
           onPressOut={() => props.navigation.navigate("Comments")}
         >
@@ -77,7 +77,7 @@ const Photo = props => (
           </View>
         </TouchableOpacity>
       )}
-      <Text style={styles.dateText}>{props.natural_time.toUpperCase()}</Text>
+      <Text style={styles.dateText}>{props.natural_time && props.natural_time.toUpperCase()}</Text>
     </View>
   </View>
 );
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
 });
 
 Photo.propTypes = {
-  id: PropTypes.number.isRequired,
+  id: PropTypes.string.isRequired,
   creator: PropTypes.shape({
     profile_image: PropTypes.string,
     username: PropTypes.string.isRequired
@@ -151,14 +151,14 @@ Photo.propTypes = {
   caption: PropTypes.string.isRequired,
   comments: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      id: PropTypes.string.isRequired,
       message: PropTypes.string.isRequired,
       creator: PropTypes.shape({
         profile_image: PropTypes.string,
         username: PropTypes.string.isRequired
-      }).isRequired
+      })
     })
-  ).isRequired,
+  ),
   natural_time: PropTypes.string.isRequired,
   is_liked: PropTypes.bool.isRequired,
   is_vertical: PropTypes.bool.isRequired,

@@ -23,6 +23,7 @@ class Container extends Component {
   _getProfile = async () => {
     const { getProfile } = this.props;
     const { profileObject: { username } } = this.state;
+
     const completeProfile = await getProfile(username);
     if (completeProfile.username) {
       this.setState({ profileObject: completeProfile });
