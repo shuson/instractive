@@ -8,7 +8,7 @@ For cloud computing CA mobile app by Team 11
 
 3. ton of other stuff you would not dive into
 
-4. check an expo distributed version in [Instractive@nevermoi](https://expo.io/@nevermoi/instractive) or scan this barcode
+4. check an expo distributed version in [Instractive@nevermoi](https://expo.io/@nevermoi/instractive) or download Expo app from Google Play and scan this qr code
 
 ![](./toexp.png)
 
